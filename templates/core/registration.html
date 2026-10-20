@@ -1,0 +1,186 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register — {{ event.title }}</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/en_base.css' %}">
+<style>
+  body { background: var(--bg-secondary); }
+  .reg-layout { max-width: 1000px; margin: 0 auto; padding: 2.5rem; display: grid; grid-template-columns: 1fr 320px; gap: 2rem; }
+  .reg-form-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.75rem; box-shadow: var(--shadow-sm); margin-bottom: 1.25rem; }
+  .reg-form-title { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: var(--text-primary); margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.6rem; }
+  .step-badge { width: 26px; height: 26px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; flex-shrink: 0; }
+  .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .session-select-item { border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.1rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 1rem; cursor: pointer; transition: all 0.2s; }
+  .session-select-item:hover:not(.is-full) { border-color: var(--primary); background: var(--primary-light); }
+  .session-select-item.selected { border-color: var(--primary); background: var(--primary-light); }
+  .session-select-item.is-full { opacity: 0.5; cursor: not-allowed; background: var(--bg-secondary); }
+  .session-select-info { flex: 1; }
+  .session-select-name { font-weight: 600; font-size: 0.9rem; color: var(--text-primary); margin-bottom: 0.2rem; }
+  .session-select-meta { font-size: 0.78rem; color: var(--text-muted); display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.4rem; }
+  .cap-bar { height: 6px; background: #e5e7eb; border-radius: 4px; overflow: hidden; margin-top: 0.4rem; }
+  .cap-fill { height: 6px; border-radius: 4px; transition: width 0.3s; }
+  .cap-label { font-size: 0.72rem; font-weight: 600; margin-top: 0.25rem; }
+  .summary-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); position: sticky; top: 84px; }
+  .summary-header { background: linear-gradient(135deg, #4f46e5, #7c3aed); padding: 1.25rem; color: white; }
+  .summary-event-name { font-family: 'DM Serif Display', serif; font-size: 1.1rem; margin-bottom: 0.25rem; }
+  .summary-event-date { font-size: 0.82rem; opacity: 0.8; }
+  .summary-body { padding: 1.25rem; }
+  .summary-row { display: flex; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px solid var(--border); font-size: 0.875rem; }
+  .summary-row:last-child { border-bottom: none; }
+  .alert-error { background:#fef2f2; color:#dc2626; border:1px solid #fecaca; padding:0.75rem 1rem; border-radius:8px; margin-bottom:1rem; font-size:0.9rem; }
+  @media (max-width: 900px) { .reg-layout { grid-template-columns: 1fr; padding: 1.25rem; } .summary-card { position: static; } .form-row-2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<nav class="en-nav">
+  <a href="/" class="en-logo">Event<span>Now</span></a>
+  <div class="en-nav-cta">
+    {% if user.is_authenticated %}
+    <a href="/dashboard/" class="btn-ghost-sm">Dashboard</a>
+    <a href="/logout/" class="btn-primary-sm" style="color:white!important;">Logout</a>
+    {% else %}
+    <a href="/login/" class="btn-ghost-sm">Sign In</a>
+    {% endif %}
+  </div>
+</nav>
+
+<div style="background:white; border-bottom:1px solid var(--border); padding:1.25rem 2.5rem; display:flex; align-items:center; gap:0.75rem;">
+  <a href="/events/{{ event.slug }}/" style="color:var(--text-muted); text-decoration:none; font-size:0.85rem;">← {{ event.title }}</a>
+  <span style="color:var(--text-muted);">›</span>
+  <span style="font-size:0.85rem; font-weight:600; color:var(--text-primary);">Register</span>
+</div>
+
+<form method="POST" action="/events/{{ event.slug }}/register/">
+{% csrf_token %}
+<div class="reg-layout">
+  <div>
+
+    {% if messages %}
+      {% for message in messages %}
+      <div class="alert-error">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- Step 1: Personal Info -->
+    <div class="reg-form-card">
+      <div class="reg-form-title">
+        <div class="step-badge">1</div>
+        Your Details
+      </div>
+      <div class="form-row-2">
+        <div class="en-form-group">
+          <label class="en-label">First Name *</label>
+          <input type="text" name="first_name" class="en-input" placeholder="Mark" required>
+        </div>
+        <div class="en-form-group">
+          <label class="en-label">Last Name *</label>
+          <input type="text" name="last_name" class="en-input" placeholder="Thompson" required>
+        </div>
+      </div>
+      <div class="en-form-group">
+        <label class="en-label">Email Address *</label>
+        <input type="email" name="email" class="en-input" placeholder="mark@example.com" required>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.35rem;">Your confirmation will be sent to this email.</p>
+      </div>
+    </div>
+
+    <!-- Step 2: Session Selection -->
+    <div class="reg-form-card">
+      <div class="reg-form-title">
+        <div class="step-badge">2</div>
+        Select Your Sessions <span style="font-size:0.8rem; font-weight:400; color:var(--danger); margin-left:0.5rem;">* At least one required</span>
+      </div>
+      <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:1.25rem;">Choose the sessions you would like to attend.</p>
+
+      {% for sc in sessions_with_capacity %}
+      <div class="session-select-item {% if sc.is_full %}is-full{% endif %}" onclick="{% if not sc.is_full %}toggleSession(this){% endif %}">
+        <input type="checkbox" name="sessions" value="{{ sc.session.id }}" style="display:none;" class="session-checkbox" {% if sc.is_full %}disabled{% endif %}>
+        <div style="width:20px; height:20px; border:2px solid var(--border); border-radius:6px; display:flex; align-items:center; justify-content:center; flex-shrink:0;" class="check-box"></div>
+        <div class="session-select-info">
+          <div class="session-select-name">{{ sc.session.title }}</div>
+          <div class="session-select-meta">
+            <span>{{ sc.session.time_display|default:"TBD" }}</span>
+            <span>{{ sc.session.room_name|default:"TBD" }}</span>
+            {% if sc.session.speaker %}<span style="color:var(--primary); font-weight:600;">{{ sc.session.speaker }}</span>{% endif %}
+          </div>
+          <!-- Capacity bar -->
+          <div class="cap-bar">
+            <div class="cap-fill" style="width:{{ sc.percentage }}%; background:{% if sc.percentage >= 100 %}#dc2626{% elif sc.percentage >= 80 %}#f97316{% else %}#4f46e5{% endif %};"></div>
+          </div>
+          <div class="cap-label" style="color:{% if sc.is_full %}#dc2626{% elif sc.percentage >= 80 %}#f97316{% else %}#16a34a{% endif %};">
+            {% if sc.is_full %}
+              Full — no spots remaining
+            {% elif sc.percentage >= 80 %}
+              Almost full — {{ sc.remaining }} spot{{ sc.remaining|pluralize }} left
+            {% else %}
+              {{ sc.remaining }} spot{{ sc.remaining|pluralize }} available
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <p style="color:var(--text-muted);">No sessions available.</p>
+      {% endfor %}
+    </div>
+
+    <div style="display:flex; gap:1rem; align-items:center;">
+      <button type="submit" class="btn-primary" style="padding:0.85rem 2rem;">Complete Registration</button>
+      <a href="/events/{{ event.slug }}/" class="btn-outline" style="padding:0.85rem 1.5rem;">Cancel</a>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: Summary -->
+  <div>
+    <div class="summary-card">
+      <div class="summary-header">
+        <div class="summary-event-name">{{ event.title }}</div>
+        <div class="summary-event-date">{{ event.start_date }}</div>
+      </div>
+      <div class="summary-body">
+        <div class="summary-row">
+          <span style="color:var(--text-secondary);">Location</span>
+          <span style="color:var(--text-primary); font-weight:600;">{{ event.location }}</span>
+        </div>
+        <div class="summary-row">
+          <span style="color:var(--text-secondary);">Admission</span>
+          <span style="color:var(--success); font-weight:600;">Free</span>
+        </div>
+        <div class="summary-row">
+          <span style="color:var(--text-secondary);">Sessions</span>
+          <span style="color:var(--text-primary); font-weight:600;">{{ sessions_with_capacity|length }} available</span>
+        </div>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:1rem; line-height:1.5;">Please select at least one session to complete your registration.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+</form>
+
+<script>
+function toggleSession(el) {
+  if (el.classList.contains('is-full')) return;
+  el.classList.toggle('selected');
+  const checkbox = el.querySelector('.session-checkbox');
+  const checkBox = el.querySelector('.check-box');
+  if (el.classList.contains('selected')) {
+    checkbox.checked = true;
+    checkBox.style.background = 'var(--primary)';
+    checkBox.style.borderColor = 'var(--primary)';
+    checkBox.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';
+  } else {
+    checkbox.checked = false;
+    checkBox.style.background = '';
+    checkBox.style.borderColor = '';
+    checkBox.innerHTML = '';
+  }
+}
+</script>
+</body>
+</html>

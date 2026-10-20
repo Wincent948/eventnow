@@ -1,0 +1,182 @@
+/* EventNow - Shared Design System */
+/* This file is imported by all HTML templates to ensure consistent styling across the platform */
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap');
+/* DM Serif Display: used for headings and logo */
+/* DM Sans: used for body text, buttons and forms */
+
+/* ── GLOBAL VARIABLES ─────────────────────────────────────────────────────── */
+/* Define reusable colours, sizes and shadows used throughout the site */
+:root {
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --primary-light: #eef2ff;
+  --accent: #f97316;
+  --accent-light: #fff7ed;
+  --success: #16a34a;
+  --success-light: #f0fdf4;
+  --danger: #dc2626;
+  --danger-light: #fef2f2;
+  --warning: #d97706;
+  --warning-light: #fffbeb;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f1f5f9;
+  --bg-card: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --border: #e2e8f0;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
+  --shadow: 0 4px 20px rgba(0,0,0,0.07);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.1);
+}
+
+/* ── RESET ────────────────────────────────────────────────────────────────── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── BODY ─────────────────────────────────────────────────────────────────── */
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  font-size: 15.5px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased; /* Smoother fonts on Mac/Chrome */
+}
+
+/* ── NAVIGATION ───────────────────────────────────────────────────────────── */
+/* Sticky top nav bar visible on all pages */
+.en-nav {
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(12px); /* Frosted glass effect */
+  border-bottom: 1px solid var(--border);
+  padding: 0 4rem;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+}
+
+.en-logo { font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: var(--text-primary); text-decoration: none; letter-spacing: -0.02em; }
+.en-logo span { color: var(--primary); } /* "Now" part in purple */
+
+.en-nav-links { display: flex; gap: 0.25rem; }
+.en-nav-links a { color: var(--text-secondary); text-decoration: none; padding: 0.45rem 1rem; border-radius: var(--radius); font-size: 0.9rem; font-weight: 500; transition: all 0.2s; }
+.en-nav-links a:hover { color: var(--text-primary); background: var(--bg-secondary); }
+.en-nav-links a.active { color: var(--primary); background: var(--primary-light); font-weight: 600; }
+.en-nav-cta { display: flex; gap: 0.75rem; align-items: center; }
+
+/* ── BUTTONS ──────────────────────────────────────────────────────────────── */
+/* Primary filled button - main actions */
+.btn-primary { background: var(--primary); color: white; border: none; padding: 0.75rem 1.9rem; border-radius: var(--radius); font-weight: 600; font-size: 0.95rem; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
+.btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99,102,241,0.35); }
+
+/* Outline button - secondary actions */
+.btn-outline { background: transparent; color: var(--text-primary); border: 1.5px solid var(--border); padding: 0.75rem 1.9rem; border-radius: var(--radius); font-weight: 500; font-size: 0.95rem; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
+.btn-outline:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+
+/* Small primary button - used in nav */
+.btn-primary-sm { background: var(--primary); color: white !important; border: none; padding: 0.5rem 1.25rem; border-radius: var(--radius); font-weight: 600; font-size: 0.875rem; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
+.btn-primary-sm:hover { background: var(--primary-dark); }
+
+/* Small ghost button - used in nav */
+.btn-ghost-sm { background: transparent; color: var(--text-secondary); border: 1.5px solid var(--border); padding: 0.5rem 1.25rem; border-radius: var(--radius); font-weight: 500; font-size: 0.875rem; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
+.btn-ghost-sm:hover { border-color: var(--primary); color: var(--primary); }
+
+/* Small danger button - delete actions */
+.btn-danger-sm { background: transparent; color: var(--danger); border: 1.5px solid var(--danger); padding: 0.4rem 0.9rem; border-radius: var(--radius); font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
+.btn-danger-sm:hover { background: var(--danger); color: white; }
+
+/* ── SIDEBAR LAYOUT ───────────────────────────────────────────────────────── */
+/* Used on Dashboard, Sessions, Registrations pages */
+.en-layout { display: flex; min-height: calc(100vh - 68px); }
+
+.en-sidebar { width: 248px; background: white; border-right: 1px solid var(--border); padding: 1.75rem 1.1rem; flex-shrink: 0; }
+.en-sidebar-section { margin-bottom: 1.75rem; }
+.en-sidebar-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); padding: 0 0.75rem; margin-bottom: 0.5rem; }
+.en-sidebar a { display: flex; align-items: center; gap: 0.65rem; padding: 0.6rem 0.85rem; border-radius: var(--radius); color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all 0.18s; margin-bottom: 0.2rem; }
+.en-sidebar a:hover { background: var(--bg-secondary); color: var(--text-primary); }
+.en-sidebar a.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+
+.en-main { flex: 1; padding: 2.25rem 2.5rem; background: var(--bg-secondary); overflow-x: hidden; }
+
+/* ── CARDS ────────────────────────────────────────────────────────────────── */
+.en-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.75rem; box-shadow: var(--shadow-sm); }
+.en-card-sm { padding: 1.1rem 1.35rem; } /* Compact card variant */
+
+/* ── STAT CARDS ───────────────────────────────────────────────────────────── */
+/* Used on Dashboard to show total events, registrations etc. */
+.stat-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.4rem 1.6rem; box-shadow: var(--shadow-sm); }
+.stat-card .stat-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 0.5rem; }
+.stat-card .stat-value { font-family: 'DM Serif Display', serif; font-size: 2.1rem; color: var(--text-primary); line-height: 1; }
+.stat-card .stat-sub { font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.35rem; }
+
+/* ── FORMS ────────────────────────────────────────────────────────────────── */
+.en-form-group { margin-bottom: 1.35rem; }
+.en-label { display: block; font-size: 0.875rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.45rem; }
+.en-input, .en-select, .en-textarea { width: 100%; background: white; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0.7rem 1rem; color: var(--text-primary); font-size: 0.95rem; font-family: 'DM Sans', sans-serif; transition: all 0.2s; outline: none; }
+.en-input:focus, .en-select:focus, .en-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99,102,241,0.12); } /* Purple glow on focus */
+.en-input::placeholder { color: var(--text-muted); }
+.en-textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+.en-select { appearance: none; cursor: pointer; }
+
+/* ── BADGES ───────────────────────────────────────────────────────────────── */
+/* Small coloured labels for event status and session capacity */
+.badge { display: inline-flex; align-items: center; padding: 0.25rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+.badge-published { background: var(--success-light); color: var(--success); }
+.badge-draft { background: var(--warning-light); color: var(--warning); }
+.badge-archived { background: var(--bg-secondary); color: var(--text-muted); border: 1px solid var(--border); }
+.badge-available { background: var(--success-light); color: var(--success); }
+.badge-full { background: var(--danger-light); color: var(--danger); }
+.badge-almost { background: var(--warning-light); color: var(--warning); }
+
+/* ── PAGE TITLE ───────────────────────────────────────────────────────────── */
+.page-title { font-family: 'DM Serif Display', serif; font-size: 1.85rem; color: var(--text-primary); margin-bottom: 0.3rem; letter-spacing: -0.02em; }
+.page-subtitle { color: var(--text-secondary); font-size: 0.92rem; line-height: 1.5; }
+
+/* ── TABLE ────────────────────────────────────────────────────────────────── */
+/* Used on Registrations page */
+.en-table { width: 100%; border-collapse: collapse; }
+.en-table th { text-align: left; padding: 0.8rem 1.1rem; font-size: 0.73rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); border-bottom: 2px solid var(--border); background: var(--bg-secondary); }
+.en-table td { padding: 1rem 1.1rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; color: var(--text-secondary); vertical-align: middle; }
+.en-table tr:last-child td { border-bottom: none; }
+.en-table tr:hover td { background: #fafbff; }
+.en-table td:first-child { color: var(--text-primary); font-weight: 500; }
+
+/* ── AVATAR ───────────────────────────────────────────────────────────────── */
+/* Circular initials badge - used in nav and registration list */
+.avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--primary-light); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.82rem; color: var(--primary); flex-shrink: 0; border: 2px solid white; box-shadow: 0 0 0 1px var(--border); }
+
+/* ── SECTION HEADING ──────────────────────────────────────────────────────── */
+.section-heading { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 1.1rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--border); }
+
+/* ── DIVIDER ──────────────────────────────────────────────────────────────── */
+.en-divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+
+/* ── MODAL ────────────────────────────────────────────────────────────────── */
+/* Popup dialog overlay and container */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.35); backdrop-filter: blur(4px); z-index: 200; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: white; border-radius: var(--radius-xl); width: 560px; max-width: 95vw; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
+.modal-header { padding: 1.4rem 1.6rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.modal-header h3 { font-family: 'DM Serif Display', serif; font-size: 1.2rem; }
+.modal-close { background: none; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; padding: 0.25rem; border-radius: 6px; }
+.modal-close:hover { background: var(--bg-secondary); }
+.modal-body { padding: 1.6rem; }
+.modal-footer { padding: 1.1rem 1.6rem; border-top: 1px solid var(--border); display: flex; gap: 0.75rem; justify-content: flex-end; background: var(--bg-secondary); }
+
+/* ── RESPONSIVE ───────────────────────────────────────────────────────────── */
+/* Hide sidebar and nav links on mobile screens */
+@media (max-width: 768px) {
+  .en-nav { padding: 0 1.25rem; height: 60px; }
+  .en-nav-links { display: none; }  /* Hide nav links on mobile */
+  .en-sidebar { display: none; }    /* Hide sidebar on mobile */
+  .en-main { padding: 1.25rem; }
+}

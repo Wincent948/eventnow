@@ -1,0 +1,235 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ event.title }} — EventNow</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/en_base.css' %}">
+<style>
+  body { background: var(--bg-secondary); }
+  .event-hero { background: linear-gradient(135deg, #1a0533 0%, #2d1b69 40%, #1e3a5f 100%); padding: 3rem 0 0; position: relative; overflow: hidden; }
+  .event-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 55% 80% at 90% 40%, rgba(251,146,60,0.3) 0%, transparent 55%), radial-gradient(ellipse 40% 60% at 10% 30%, rgba(139,92,246,0.25) 0%, transparent 50%); }
+  .hero-inner { max-width: 1100px; margin: 0 auto; padding: 0 2.5rem; position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 320px; gap: 2.5rem; align-items: start; }
+  .hero-left { color: white; padding-bottom: 3rem; }
+  .event-category-tag { display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.9); font-size: 0.78rem; font-weight: 600; padding: 0.3rem 0.85rem; border-radius: 20px; margin-bottom: 1.25rem; }
+  .event-public-title { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.15; margin-bottom: 1.25rem; letter-spacing: -0.02em; }
+  .event-public-meta { display: flex; flex-direction: column; gap: 0.65rem; margin-bottom: 1.75rem; }
+  .event-public-meta-item { display: flex; align-items: center; gap: 0.75rem; font-size: 0.92rem; color: rgba(255,255,255,0.85); }
+  .meta-icon { width: 32px; height: 32px; background: rgba(255,255,255,0.12); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .hero-stats { display: flex; gap: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.15); }
+  .hero-stat-val { font-family: 'DM Serif Display', serif; font-size: 1.6rem; color: white; display: block; }
+  .hero-stat-lbl { font-size: 0.78rem; color: rgba(255,255,255,0.6); }
+  .reg-card { background: white; border-radius: var(--radius-xl); box-shadow: 0 8px 40px rgba(0,0,0,0.2); overflow: hidden; position: sticky; top: 84px; }
+  .reg-card-header { background: linear-gradient(135deg, #4f46e5, #7c3aed); padding: 1.25rem; text-align: center; color: white; }
+  .reg-card-header h3 { font-family: 'DM Serif Display', serif; font-size: 1.3rem; margin-bottom: 0.25rem; }
+  .reg-card-header p { font-size: 0.82rem; opacity: 0.8; }
+  .reg-card-body { padding: 1.25rem; }
+  .capacity-bar { height: 8px; background: var(--bg-secondary); border-radius: 4px; overflow: hidden; margin-bottom: 1.25rem; }
+  .capacity-fill { height: 8px; background: var(--primary); border-radius: 4px; }
+  .session-mini { background: var(--bg-secondary); border-radius: var(--radius); padding: 0.6rem 0.85rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; }
+  .event-body { max-width: 1100px; margin: 0 auto; padding: 2.5rem; display: grid; grid-template-columns: 1fr 320px; gap: 2.5rem; }
+  .content-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.75rem; box-shadow: var(--shadow-sm); margin-bottom: 1.25rem; }
+  .content-card h2 { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--text-primary); margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+  .session-track { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 1rem; }
+  .session-track-header { background: var(--bg-secondary); padding: 0.75rem 1rem; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.6rem; border-bottom: 1px solid var(--border); }
+  .session-item { padding: 1rem; display: flex; gap: 1rem; align-items: center; border-bottom: 1px solid var(--border); }
+  .session-item:last-child { border-bottom: none; }
+  .session-time { font-size: 0.78rem; font-weight: 700; color: var(--primary); min-width: 75px; }
+  .session-info { flex: 1; }
+  .session-name { font-weight: 600; font-size: 0.9rem; color: var(--text-primary); margin-bottom: 0.2rem; }
+  .session-speaker { font-size: 0.78rem; color: var(--text-muted); }
+  .session-cap { font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 20px; flex-shrink: 0; }
+  .organiser-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; box-shadow: var(--shadow-sm); margin-bottom: 1.25rem; }
+  @media (max-width: 900px) { .hero-inner, .event-body { grid-template-columns: 1fr; } .reg-card { position: static; } }
+</style>
+</head>
+<body>
+
+<nav class="en-nav">
+  <a href="/" class="en-logo">Event<span>Now</span></a>
+  <div class="en-nav-links">
+    <a href="/dashboard/">Create Events</a>
+  </div>
+  <div class="en-nav-cta">
+    {% if user.is_authenticated %}
+    <a href="/dashboard/" class="btn-ghost-sm">Dashboard</a>
+    <a href="/logout/" class="btn-primary-sm" style="color:white!important;">Logout</a>
+    {% else %}
+    <a href="/login/" class="btn-ghost-sm">Sign In</a>
+    <a href="/login/" class="btn-primary-sm" style="color:white!important;">Get Started</a>
+    {% endif %}
+  </div>
+</nav>
+
+<!-- Hero -->
+<div class="event-hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="event-category-tag">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Event
+      </div>
+      <h1 class="event-public-title">{{ event.title }}</h1>
+      <div class="event-public-meta">
+        <div class="event-public-meta-item">
+          <div class="meta-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+          {{ event.start_date }} — {{ event.end_date }}
+        </div>
+        <div class="event-public-meta-item">
+          <div class="meta-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          {{ event.location }}
+        </div>
+        <div class="event-public-meta-item">
+          <div class="meta-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+          Organised by {{ event.organizer.user.get_full_name }}
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-val">{{ event.registration_set.count }}</span>
+          <span class="hero-stat-lbl">Registered</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-val">{{ sessions.count }}</span>
+          <span class="hero-stat-lbl">Sessions</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-val">Free</span>
+          <span class="hero-stat-lbl">Admission</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Registration Card -->
+    <div style="padding-bottom: 1.5rem;">
+      <div class="reg-card">
+        {% if user.is_authenticated and event.organizer.user == user %}
+        <div class="reg-card-header">
+          <h3>Your Event</h3>
+          <p>You are the organiser of this event</p>
+        </div>
+        <div class="reg-card-body">
+          <a href="/events/{{ event.id }}/edit/" class="btn-primary" style="display:block; text-align:center; margin-bottom:0.75rem;">Edit Event</a>
+          <a href="/events/{{ event.id }}/sessions/" class="btn-outline" style="display:block; text-align:center; margin-bottom:0.75rem;">Manage Sessions</a>
+          <a href="/events/{{ event.id }}/registrations/" class="btn-outline" style="display:block; text-align:center;">View Registrations</a>
+        </div>
+        {% else %}
+        <div class="reg-card-header">
+          <h3>Register Now</h3>
+          <p>Free admission · Select your sessions</p>
+        </div>
+        <div class="reg-card-body">
+          <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.6rem;">Available Sessions</div>
+          {% for session in sessions %}
+          <div class="session-mini">
+            <span style="color:var(--text-primary); font-weight:500;">{{ session.title }}</span>
+            <span style="color:var(--success); font-weight:600; font-size:0.75rem;">Open</span>
+          </div>
+          {% empty %}
+          <p style="color:var(--text-muted); font-size:0.85rem;">No sessions yet.</p>
+          {% endfor %}
+          <a href="/events/{{ event.slug }}/register/" class="btn-primary" style="display:block; text-align:center; margin-top:1rem;">Register for This Event</a>
+          <p style="text-align:center; font-size:0.75rem; color:var(--text-muted); margin-top:0.6rem;">Free · Instant confirmation</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Body -->
+<div class="event-body">
+  <div>
+    <!-- About -->
+    <div class="content-card">
+      <h2>About This Event</h2>
+      <p style="color:var(--text-secondary); line-height:1.8; font-size:0.95rem;">{{ event.description }}</p>
+    </div>
+
+    <!-- Sessions -->
+    <div class="content-card">
+      <h2>Session Schedule</h2>
+      {% if sessions %}
+      <div class="session-track">
+        <div class="session-track-header">
+          <div style="width:10px; height:10px; border-radius:50%; background:#6366f1;"></div>
+          Sessions
+        </div>
+        {% for session in sessions %}
+        <div class="session-item">
+          <div class="session-time">{{ session.timeslot.start_time|date:"g:i A" }}</div>
+          <div class="session-info">
+            <div class="session-name">{{ session.title }}</div>
+            <div class="session-speaker">{{ session.speaker }} · {{ session.room.name }} · Max {{ session.capacity }}</div>
+          </div>
+          <span class="session-cap" style="background:var(--success-light); color:var(--success);">Open</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p style="color:var(--text-muted);">No sessions scheduled yet.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Right side -->
+  <div>
+    <div class="organiser-card">
+      <div style="font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:1rem;">Organised By</div>
+      <div style="display:flex; align-items:center; gap:0.85rem;">
+        <div class="avatar" style="width:48px; height:48px; font-size:1rem;">
+          {{ event.organizer.user.first_name|first }}{{ event.organizer.user.last_name|first }}
+        </div>
+        <div>
+          <div style="font-weight:700; color:var(--text-primary);">{{ event.organizer.user.get_full_name }}</div>
+          <div style="font-size:0.82rem; color:var(--text-muted);">Event Organiser</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="organiser-card">
+      <div style="font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:1rem;">Location</div>
+      <div style="font-weight:600; color:var(--text-primary); margin-bottom:0.25rem;">{{ event.location }}</div>
+      <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">{{ event.start_date }}</div>
+    </div>
+
+    <div class="organiser-card">
+      <div style="font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:1rem;">Share This Event</div>
+      <div style="display:flex; gap:0.6rem;">
+        <button class="btn-outline" style="flex:1; padding:0.5rem; font-size:0.82rem;">Copy Link</button>
+        <button class="btn-outline" style="flex:1; padding:0.5rem; font-size:0.82rem;">Share</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html><script>
+document.querySelector('button[onclick*="copy"], .copy-btn, button') && null;
+
+document.querySelectorAll('button').forEach(btn => {
+  if (btn.textContent.trim() === 'Copy Link') {
+    btn.addEventListener('click', function() {
+      navigator.clipboard.writeText(window.location.href);
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy Link', 2000);
+    });
+  }
+  if (btn.textContent.trim() === 'Share') {
+    btn.addEventListener('click', function() {
+      if (navigator.share) {
+        navigator.share({
+          title: document.title,
+          url: window.location.href
+        });
+      } else {
+        navigator.clipboard.writeText(window.location.href);
+        btn.textContent = 'Link Copied!';
+        setTimeout(() => btn.textContent = 'Share', 2000);
+      }
+    });
+  }
+});
+</script>

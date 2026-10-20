@@ -1,0 +1,314 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EventNow Find & Create Events</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/en_base.css' %}">
+<style>
+  .en-nav { padding: 0 2rem; gap: 1rem; }
+  .nav-search { display:flex; align-items:center; flex:1; max-width:520px; background:#f3f4f6; border:1.5px solid var(--border); border-radius:50px; overflow:hidden; transition:all 0.2s; }
+  .nav-search:focus-within { border-color:var(--primary); background:white; box-shadow:0 0 0 3px rgba(99,102,241,0.1); }
+  .nav-search-keyword { flex:1; border:none; background:transparent; padding:0.6rem 1rem; font-size:0.9rem; font-family:'DM Sans',sans-serif; color:var(--text-primary); outline:none; }
+  .nav-search-divider { width:1px; height:24px; background:var(--border); flex-shrink:0; }
+  .nav-search-location { flex:0.8; border:none; background:transparent; padding:0.6rem 1rem; font-size:0.9rem; font-family:'DM Sans',sans-serif; color:var(--text-secondary); outline:none; }
+  .nav-search-btn { background:var(--primary); border:none; width:40px; height:40px; border-radius:50%; margin:4px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; transition:background 0.2s; }
+  .nav-search-btn:hover { background:var(--primary-dark); }
+  .nav-links { display:flex; align-items:center; gap:0.25rem; flex-shrink:0; }
+  .nav-links a { color:var(--text-secondary); text-decoration:none; padding:0.45rem 0.9rem; border-radius:var(--radius); font-size:0.88rem; font-weight:500; transition:all 0.2s; white-space:nowrap; }
+  .nav-links a:hover { color:var(--text-primary); background:var(--bg-secondary); }
+  .nav-links a.primary-link { color:var(--primary); font-weight:600; }
+  .hero { position:relative; height:500px; overflow:hidden; display:flex; align-items:flex-end; }
+  .hero-bg { position:absolute; inset:0; background:linear-gradient(135deg, #1a0533 0%, #2d1b69 30%, #1e3a5f 60%, #0f2027 100%); z-index:0; }
+  .hero-bg::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse 60% 80% at 80% 40%, rgba(251,146,60,0.35) 0%, transparent 55%), radial-gradient(ellipse 40% 60% at 75% 60%, rgba(249,115,22,0.2) 0%, transparent 45%), radial-gradient(ellipse 50% 40% at 30% 20%, rgba(139,92,246,0.2) 0%, transparent 50%); }
+  .hero::after { content:''; position:absolute; bottom:0; left:0; right:0; height:120px; background:linear-gradient(to top, white, transparent); z-index:1; }
+  .hero-content { position:relative; z-index:2; padding:3rem 4rem; max-width:680px; color:white; }
+  .hero-tag-line { font-size:0.82rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.7); margin-bottom:0.75rem; background:rgba(255,255,255,0.12); display:inline-block; padding:0.3rem 0.9rem; border-radius:4px; }
+  .hero-title { font-family:'DM Sans',sans-serif; font-size:clamp(2.2rem,5vw,3.5rem); font-weight:800; line-height:1.08; letter-spacing:-0.02em; margin-bottom:1.5rem; text-transform:uppercase; }
+  .hero-title .highlight { background:linear-gradient(90deg,#a78bfa,#f97316); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; display:block; }
+  .hero-cta-btn { display:inline-flex; align-items:center; gap:0.5rem; background:white; color:var(--text-primary); border:none; padding:0.85rem 2rem; border-radius:50px; font-weight:700; font-size:0.95rem; cursor:pointer; text-decoration:none; transition:all 0.2s; font-family:'DM Sans',sans-serif; }
+  .hero-cta-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.25); }
+  .categories { padding:3rem 4rem 2rem; background:white; }
+  .categories h2 { font-family:'DM Serif Display',serif; font-size:1.5rem; color:var(--text-primary); margin-bottom:1.75rem; letter-spacing:-0.01em; }
+  .categories-grid { display:flex; gap:1.5rem; overflow-x:auto; padding-bottom:0.5rem; scrollbar-width:none; }
+  .categories-grid::-webkit-scrollbar { display:none; }
+  .category-item { display:flex; flex-direction:column; align-items:center; gap:0.75rem; cursor:pointer; flex-shrink:0; text-decoration:none; transition:all 0.2s; }
+  .category-item:hover .category-icon { border-color:var(--primary); background:var(--primary-light); }
+  .category-icon { width:80px; height:80px; border-radius:50%; border:1.5px solid var(--border); background:var(--bg-secondary); display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+  .category-name { font-size:0.82rem; font-weight:500; color:var(--text-secondary); text-align:center; max-width:80px; line-height:1.3; }
+  .featured { padding:2rem 4rem 4rem; background:white; border-top:1px solid var(--border); }
+  .featured-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
+  .featured-header h2 { font-family:'DM Serif Display',serif; font-size:1.5rem; color:var(--text-primary); letter-spacing:-0.01em; }
+  .featured-header a { font-size:0.875rem; color:var(--primary); text-decoration:none; font-weight:600; }
+  .events-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.5rem; }
+  .event-card { border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; cursor:pointer; transition:all 0.25s; text-decoration:none; display:block; background:white; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  .event-card:hover { transform:translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.12); border-color:transparent; }
+  .event-card-img { height:180px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+  .event-card-img::after { content:''; position:absolute; inset:0; background:linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.25) 100%); }
+  .event-card-body { padding:1.1rem 1.25rem 1.25rem; }
+  .event-date { font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.4rem; }
+  .event-name { font-weight:700; font-size:1rem; color:var(--text-primary); margin-bottom:0.5rem; line-height:1.35; }
+  .event-location { font-size:0.82rem; color:var(--text-secondary); margin-bottom:0.75rem; display:flex; align-items:center; gap:0.3rem; }
+  .event-footer { display:flex; align-items:center; justify-content:space-between; padding-top:0.75rem; border-top:1px solid var(--border); }
+  .event-price { font-size:0.85rem; font-weight:700; color:var(--text-primary); }
+  .event-count { font-size:0.78rem; color:var(--text-secondary); display:flex; align-items:center; gap:0.3rem; }
+  .for-organisers { padding:5rem 4rem; background:var(--bg-secondary); display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center; }
+  .org-content h2 { font-family:'DM Serif Display',serif; font-size:2.2rem; color:var(--text-primary); margin-bottom:1rem; letter-spacing:-0.02em; line-height:1.2; }
+  .org-content p { color:var(--text-secondary); font-size:1rem; line-height:1.7; margin-bottom:1.75rem; }
+  .org-features { display:flex; flex-direction:column; gap:0.75rem; }
+  .org-feature { display:flex; align-items:center; gap:0.75rem; font-size:0.9rem; color:var(--text-secondary); }
+  .org-feature-check { width:22px; height:22px; background:var(--success-light); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .org-visual { background:white; border:1px solid var(--border); border-radius:var(--radius-xl); padding:1.5rem; box-shadow:var(--shadow); }
+  .org-visual-header { display:flex; align-items:center; gap:0.75rem; margin-bottom:1.25rem; padding-bottom:1rem; border-bottom:1px solid var(--border); }
+  .org-visual-icon { width:40px; height:40px; background:var(--primary-light); border-radius:10px; display:flex; align-items:center; justify-content:center; }
+  .org-stat-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.75rem; margin-bottom:1rem; }
+  .org-stat-box { background:var(--bg-secondary); border-radius:var(--radius); padding:0.75rem; text-align:center; }
+  .org-stat-num { font-family:'DM Serif Display',serif; font-size:1.4rem; color:var(--text-primary); display:block; }
+  .org-stat-lbl { font-size:0.72rem; color:var(--text-muted); }
+  .org-progress-item { margin-bottom:0.6rem; }
+  .org-progress-label { display:flex; justify-content:space-between; font-size:0.78rem; color:var(--text-secondary); margin-bottom:0.3rem; }
+  .org-progress-bar { height:6px; background:var(--bg-secondary); border-radius:3px; overflow:hidden; }
+  .org-progress-fill { height:6px; border-radius:3px; background:var(--primary); }
+  footer { background:var(--text-primary); color:rgba(255,255,255,0.55); padding:2rem 4rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
+  .footer-logo { font-family:'DM Serif Display',serif; font-size:1.2rem; color:white; }
+  footer nav { display:flex; gap:1.5rem; }
+  footer nav a { color:rgba(255,255,255,0.55); text-decoration:none; font-size:0.85rem; }
+  footer nav a:hover { color:white; }
+  @media (max-width:768px) {
+    .nav-search { display:none; }
+    .hero-content { padding:2rem 1.5rem; }
+    .categories, .featured { padding:2rem 1.5rem; }
+    .for-organisers { padding:2rem 1.5rem; grid-template-columns:1fr; }
+    footer { padding:2rem 1.5rem; flex-direction:column; text-align:center; }
+  }
+</style>
+</head>
+<body>
+
+
+
+  
+<nav class="en-nav">
+  <a href="/" class="en-logo">Event<span>Now</span></a>
+  <div class="nav-search" style="max-width:600px;">
+    <svg style="margin-left:1rem;flex-shrink:0;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" class="nav-search-keyword" placeholder="Search events..." style="font-size:1rem;">
+    <button class="nav-search-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
+  </div>
+  <div class="nav-links">
+    {% if user.is_authenticated %}
+    <a href="/dashboard/" style="color:var(--primary);font-weight:600;text-decoration:none;padding:0.55rem 1.2rem;font-size:0.95rem;">Dashboard</a>
+    <a href="/logout/" style="background:var(--primary);color:white;padding:0.55rem 1.2rem;border-radius:10px;font-size:0.95rem;font-weight:700;text-decoration:none;">Logout</a>
+    {% else %}
+    <a href="/login/" style="background:var(--primary);color:white;padding:0.65rem 1.75rem;border-radius:10px;font-size:0.95rem;font-weight:700;text-decoration:none;">Sign In</a>
+    {% endif %}
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-tag-line">Discover What's On</div>
+    <h1 class="hero-title">
+      FROM LOCAL MEETUPS
+      <span class="highlight">TO BIG CONFERENCES</span>
+    </h1>
+    <a href="#events" class="hero-cta-btn" style="margin-top:1rem;">Browse Events Near You →</a>
+  </div>
+</section>
+
+<!-- INFO BANNER -->
+<div style="background:#f5f3ff;border-bottom:1px solid #ddd6fe;padding:0.75rem 4rem;display:flex;align-items:center;justify-content:center;gap:2rem;">
+  <span style="font-size:0.9rem;color:#4f46e5;font-weight:600;">Attending? &nbsp;No account needed — just register directly.</span>
+  <span style="color:#c4b5fd;">|</span>
+  <span style="font-size:0.9rem;color:#6b7280;">Organising? <a href="/login/" style="color:#4f46e5;font-weight:700;text-decoration:none;">Sign in here →</a></span>
+</div>
+
+<section class="categories">
+  <h2>Browse by Category</h2>
+  <div class="categories-grid">
+    <a href="#" class="category-item">
+      <div class="category-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <span class="category-name">Conferences</span>
+    </a>
+    <a href="#" class="category-item">
+      <div class="category-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <span class="category-name">Networking</span>
+    </a>
+    <a href="#" class="category-item">
+      <div class="category-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+      <span class="category-name">Workshops</span>
+    </a>
+    <a href="#" class="category-item">
+      <div class="category-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+      <span class="category-name">Awards</span>
+    </a>
+    <a href="#" class="category-item">
+      <div class="category-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+      <span class="category-name">Expos</span>
+    </a>
+    <a href="#" class="category-item">
+      <div class="category-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="1.5"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></div>
+      <span class="category-name">Tech</span>
+    </a>
+    <a href="#" class="category-item">
+      <div class="category-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="1.5"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></div>
+      <span class="category-name">Business</span>
+    </a>
+    <a href="#" class="category-item">
+      <div class="category-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+      <span class="category-name">Community</span>
+    </a>
+  </div>
+</section>
+
+<section class="featured" id="events">
+  <div class="featured-header">
+    <h2>Upcoming Events in Brisbane</h2>
+    <a href="#">See all events →</a>
+  </div>
+  <div class="events-grid">
+    {% for event in events %}
+    <a href="/events/{{ event.slug }}/" class="event-card">
+      <div class="event-card-img" style="background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <div class="event-card-body">
+        <div class="event-date">{{ event.start_date }}</div>
+        <div class="event-name">{{ event.title }}</div>
+        <div class="event-location">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          {{ event.location }}
+        </div>
+        <div class="event-footer">
+          <span class="event-price">Free</span>
+          <span class="event-count">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            {{ event.registration_set.count }} registered
+          </span>
+        </div>
+      </div>
+    </a>
+    {% empty %}
+    <p style="color:var(--text-muted);">No events yet.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="for-organisers">
+  <div class="org-content">
+    <h2>Everything You Need to Run Great Events</h2>
+    <p>EventNow gives organisers powerful tools to create event pages, manage sessions, and track registrations all in one place.</p>
+    <div class="org-features">
+      <div class="org-feature">
+        <div class="org-feature-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+        Create professional event pages in minutes
+      </div>
+      <div class="org-feature">
+        <div class="org-feature-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+        Multi-track session scheduling with capacity control
+      </div>
+      <div class="org-feature">
+        <div class="org-feature-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+        QR code check-in for seamless attendee management
+      </div>
+      <div class="org-feature">
+        <div class="org-feature-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+        Real-time registration tracking and analytics
+      </div>
+    </div>
+    <div style="margin-top:2rem;">
+      <a href="/login/" class="btn-primary">Start Creating Events →</a>
+    </div>
+  </div>
+  <div class="org-visual">
+    <div class="org-visual-header">
+      <div class="org-visual-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <div>
+        <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary);">Brisbane Tech Summit</div>
+        <div style="font-size:0.78rem;color:var(--text-muted);">June 15, 2026</div>
+      </div>
+      <span class="badge badge-published" style="margin-left:auto;">Published</span>
+    </div>
+    <div class="org-stat-row">
+      <div class="org-stat-box"><span class="org-stat-num">3</span><span class="org-stat-lbl">Registered</span></div>
+      <div class="org-stat-box"><span class="org-stat-num">3</span><span class="org-stat-lbl">Sessions</span></div>
+      <div class="org-stat-box"><span class="org-stat-num">Free</span><span class="org-stat-lbl">Admission</span></div>
+    </div>
+    <div>
+      <div class="org-progress-item">
+        <div class="org-progress-label"><span>Main Hall</span><span>Cap: 500</span></div>
+        <div class="org-progress-bar"><div class="org-progress-fill" style="width:60%"></div></div>
+      </div>
+      <div class="org-progress-item">
+        <div class="org-progress-label"><span>Workshop Room A</span><span>Cap: 50</span></div>
+        <div class="org-progress-bar"><div class="org-progress-fill" style="width:40%"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">EventNow</div>
+  <p style="font-size:0.85rem;">© 2026 EventNow. All rights reserved.</p>
+</footer>
+
+
+<script>
+// Colour each event card differently
+const colors = [
+  'linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%)',
+  'linear-gradient(135deg,#059669 0%,#0d9488 100%)',
+  'linear-gradient(135deg,#dc2626 0%,#ea580c 100%)',
+  'linear-gradient(135deg,#2563eb 0%,#0891b2 100%)',
+  'linear-gradient(135deg,#7c3aed 0%,#db2777 100%)',
+  'linear-gradient(135deg,#d97706 0%,#dc2626 100%)',
+];
+document.querySelectorAll('.event-card-img').forEach((img, i) => {
+  img.style.background = colors[i % colors.length];
+});
+
+// Category filter
+document.querySelectorAll('.category-item').forEach(item => {
+  item.addEventListener('click', function(e) {
+    e.preventDefault();
+    const category = this.querySelector('.category-name').textContent.toLowerCase().replace(/s$/, '');
+    document.querySelectorAll('.event-card').forEach(card => {
+      const title = card.querySelector('.event-name').textContent.toLowerCase();
+      card.style.display = title.includes(category) ? 'block' : 'none';
+    });
+  });
+});
+
+// See all events
+document.querySelector('.featured-header a').addEventListener('click', function(e) {
+  e.preventDefault();
+  document.querySelectorAll('.event-card').forEach(card => {
+    card.style.display = 'block';
+  });
+});
+
+// Search
+function doSearch() {
+  const keyword = document.querySelector('.nav-search-keyword').value.toLowerCase().trim();
+  if (!keyword) return;
+  document.getElementById('events').scrollIntoView({behavior: 'smooth'});
+  setTimeout(function() {
+    document.querySelectorAll('.event-card').forEach(card => {
+      const title = card.querySelector('.event-name').textContent.toLowerCase();
+      const location = card.querySelector('.event-location').textContent.toLowerCase();
+      card.style.display = (title.includes(keyword) || location.includes(keyword)) ? 'block' : 'none';
+    });
+  }, 500);
+}
+document.querySelector('.nav-search-btn').onclick = doSearch;
+document.querySelector('.nav-search-keyword').onkeypress = function(e) {
+  if (e.key === 'Enter') doSearch();
+};
+</script>
+</body>
+</html>
