@@ -10,7 +10,6 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = ['.pythonanywhere.com', 'localhost', '127.0.0.1']
 CSRF_TRUSTED_ORIGINS = ['https://*.pythonanywhere.com']
 
-CSRF_TRUSTED_ORIGINS = ['https://infs3202-96e162bb.uqcloud.net']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
