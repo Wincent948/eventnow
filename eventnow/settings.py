@@ -5,9 +5,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'dev-only-change-me')
 
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['infs3202-96e162bb.uqcloud.net']
+ALLOWED_HOSTS = ['.pythonanywhere.com', 'localhost', '127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['https://*.pythonanywhere.com']
 
 CSRF_TRUSTED_ORIGINS = ['https://infs3202-96e162bb.uqcloud.net']
 
@@ -50,16 +51,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'eventnow.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'eventnow_db',
-        'USER': 'root',
-        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-        'HOST': 'localhost',
-        'PORT': '3306',
+if os.environ.get('DB_ENGINE') == 'mysql':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ.get('DB_NAME', 'eventnow_db'),
+            'USER': os.environ.get('DB_USER', ''),
+            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+            'HOST': os.environ.get('DB_HOST', 'localhost'),
+            'PORT': os.environ.get('DB_PORT', '3306'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
